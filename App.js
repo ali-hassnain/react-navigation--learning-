@@ -1,11 +1,70 @@
 import React from "react";
-import { View, TextInput } from "react-native";
+import { View, TextInput, FlatList } from "react-native";
 import { Text, Button } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import PostCard from "./components/PostCard";
+import { Container } from "./styles/FeedStyles";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import AddPost from "./components/AddPost";
+
+const Posts = [
+  {
+    id: "1",
+    userName: "Ali Hassnain",
+    Image: require("./assets/ali.jpeg"),
+    postTime: "40 minutes ago",
+    post: "Let's go for a retreat in these winters at some warm place.",
+    postImage: require("./assets/beach.jpg"),
+    liked: true,
+    likes: "14",
+    comments: "5",
+  },
+  {
+    id: "2",
+    userName: "Kate Winslet",
+    Image: require("./assets/girl.jpg"),
+    postTime: "2 hours ago",
+    post: "I love to travel to Pakistan. It is a safe and calm place to travel with such scenery. This place is Fairy Meadows in the Northern Pakistan❤️",
+    postImage: require("./assets/fairymeadows.jpg"),
+    liked: true,
+    likes: "152",
+    comments: "78",
+  },
+  {
+    id: "3",
+    userName: "Waqar Ali",
+    Image: require("./assets/boy.jpg"),
+    postTime: "2 minutes ago",
+    post: "Lahore is a cultural place to travel. I would love to host you guys to travel anywhere in Lahore.",
+    postImage: require("./assets/lahore.jpg"),
+    liked: true,
+    likes: "100",
+    comments: "28",
+  },
+];
+
+function Cards({ navigation }) {
+  return (
+    <Container>
+      <Button
+        onPress={() => {
+          navigation.navigate("AddPost");
+        }}
+      >
+        Posts
+      </Button>
+      <FlatList
+        data={Posts}
+        renderItem={({ item }) => <PostCard item={item} />}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+      />
+    </Container>
+  );
+}
 
 function HomeScreen({ navigation }) {
   const [name, setName] = React.useState("");
@@ -26,6 +85,13 @@ function HomeScreen({ navigation }) {
       >
         Enter
       </Button>
+      {/* <Button
+        onPress={() => {
+          navigation.navigate("Cards");
+        }}
+      >
+        Cards
+      </Button> */}
     </View>
   );
 }
@@ -47,7 +113,6 @@ function DeatailScreen({ navigation, route }) {
       <Button
         color="#50C7C7"
         shadowless
-        title="Home"
         onPress={() => {
           navigation.navigate("HomeScreen");
         }}
@@ -93,12 +158,20 @@ const MainStack = createNativeStackNavigator();
 function MainStackScreen() {
   return (
     <MainStack.Navigator>
-      <MainStack.Screen name="HomeScreen" component={HomeScreen} />
+      {/* <MainStack.Screen name="Card" component={Cards}></MainStack.Screen> */}
+      <MainStack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <MainStack.Screen
         name="DeatailScreen"
         component={DeatailScreen}
         options={{
           title: "Details",
+          headerShown: false,
           headerRight: () => (
             <Button
               round
@@ -119,20 +192,34 @@ function MainStackScreen() {
 function RootStackScreen() {
   return (
     <RootStack.Navigator
-      mode="modal"
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: "#80d0c7",
-        },
-      }}
+    // mode="modal"
+    // screenOptions={{
+    //   headerStyle: {
+    //     backgroundColor: "#80d0c7",
+    //   },
+    // }}
     >
-      <RootStack.Screen name="Naino Quotes" component={MainStackScreen} />
+      {/* <RootStack.Screen name="card" component={Cards}></RootStack.Screen> */}
+      <RootStack.Screen
+        name="Quotes"
+        component={MainStackScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <RootStack.Screen
         name="Mymodal"
         component={ModalScreen}
         options={{
           headerShown: false,
           headerStyle: { backgroundColor: "green" },
+        }}
+      />
+      <RootStack.Screen
+        name="AddPost"
+        component={AddPost}
+        options={{
+          headerShown: false,
         }}
       />
     </RootStack.Navigator>
@@ -146,20 +233,26 @@ function TabNavigation() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          // if (route.name === "Home") {
-          //   iconName = focused
-          //     ? "ios-information-circle"
-          //     : "ios-information-circle-outline";
-          // } else if (route.name === "Settings") {
-          //   iconName = focused ? "ios-listbox" : "ios-list";
-          // }
+          if (route.name === "Home") {
+            iconName = focused
+              ? "ios-information-circle"
+              : "ios-information-circle-outline";
+          } else if (route.name === "Settings") {
+            iconName = focused ? "ios-listbox" : "ios-list";
+          }
           return <Ionicons name={iconName} color={color} size={size} />;
         },
       })}
     >
       {/* You can add as many buttons you want in this bottom bar over here and never go more than 5 tabs! */}
 
-      <Tabs.Screen name="Home" component={RootStackScreen}></Tabs.Screen>
+      <Tabs.Screen
+        name="Home"
+        component={RootStackScreen}
+        options={{
+          headerShown: false,
+        }}
+      ></Tabs.Screen>
       <Tabs.Screen
         name="Settings"
         component={SettingsScreen}
@@ -201,8 +294,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Drawer.Navigator>
-        <Drawer.Screen name="Quote One" component={FirstItem} />
         <Drawer.Screen name="Home" component={TabNavigation} />
+        <Drawer.Screen name="Posts" component={Cards}></Drawer.Screen>
+        <Drawer.Screen name="Quote of the day" component={FirstItem} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
