@@ -13,3 +13,5 @@ Creating a modal
 Creating a bottom tabs
 
 Creating Side drawer menu in ReactNavigation
+
+Creating a post scroll and designed using styled components.
